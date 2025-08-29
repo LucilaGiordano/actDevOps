@@ -21,6 +21,6 @@ jobs:
 
       - name: Run Deploy Script
         run: |
-          ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "              
-          
+          ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "
+
           cd /home/alumno/lemp-sites/lu_giordano/actDevOps && git pull origin main"
