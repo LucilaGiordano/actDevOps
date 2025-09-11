@@ -1,0 +1,32 @@
+name: Deploy Production
+
+# Se ejecuta cada vez que hay push a main
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. Traer el código
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      # 2. Test SSH connection (opcional)
+      - name: Test SSH connection
+        run: |
+          ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USER_PROD }}@${{ secrets.SSH_HOST_PROD }} "whoami && pwd && ls -la"
+
+      # 3. Deploy en Producción
+      - name: Deploy to Production
+        run: |
+          ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USER_PROD }}@${{ secrets.SSH_HOST_PROD }} << 'EOF'
+            cd ~/lemp-sites/lu_giordano/produccion || exit
+            git fetch origin
+            git checkout main
+            git pull
+            # Agregar otros comandos de build/deploy si es necesario
+          EOF
