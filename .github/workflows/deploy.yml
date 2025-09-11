@@ -3,7 +3,7 @@ name: CD - Deploy con Git Pull
 on:
   push:
     branches: 
-      - main
+      - develop
 
 jobs:
   deploy:
