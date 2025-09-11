@@ -2,38 +2,23 @@ name: CD - Deploy con Git Pull
 
 on:
   push:
-    branches:
+    branches: 
       - main
 
 jobs:
   deploy:
-    name: Deploy to Server
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Setup SSH
-        uses: webfactory/ssh-agent@v0.8.0
+      - name: Deploy to Server via SSH
+        uses: appleboy/ssh-action@v1.0.3
         with:
-          ssh-private-key: ${{ secrets.SSH_KEY }}
-
-      # 🔍 Debug: confirmar usuario, ruta y carpetas disponibles
-      - name: Test SSH connection
-        run: ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "bash -c 'whoami && pwd && ls -la'"
-
-      # 🚀 Deploy: git pull si existe, git clone si no
-      - name: Run Deploy Script
-        run: |
-          ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "bash -c '
-            mkdir -p /home/alumno/lemp-sites/lu_giordano &&
-            cd /home/alumno/lemp-sites/lu_giordano &&
-            if [ -d actDevOps/.git ]; then
-              echo \"📂 Repo ya existe, haciendo git pull...\"
-              cd actDevOps && git pull origin main
-            else
-              echo \"🆕 Repo no existe, haciendo git clone...\"
-              git clone git@github.com:LucilaGiordano/actDevOps.git actDevOps
-            fi
-          '"
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_KEY }}
+          script: |
+            cd /home/alumno/lemp-sites/lu_giordano/actDevOps
+            git pull origin main
