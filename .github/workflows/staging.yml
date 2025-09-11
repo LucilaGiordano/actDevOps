@@ -1,0 +1,33 @@
+name: Deploy Staging
+
+on:
+  push:
+    branches:
+      - develop
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. Traer el código
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      # 2. Test SSH connection (opcional)
+      - name: Test SSH connection
+        run: |
+          ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USER_STAGING }}@${{ secrets.SSH_HOST_STAGING }} "whoami && pwd && ls -la"
+
+      # 3. Deploy en Staging
+      - name: Deploy to Staging
+        run: |
+          ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USER_STAGING }}@${{ secrets.SSH_HOST_STAGING }} << 'EOF'
+            cd ~/lemp-sites/lu_giordano/staging || exit
+            git fetch origin
+            git checkout develop
+            git pull
+            # Agregar aquí otros comandos necesarios, ej:
+            # npm install
+            # npm run build
+          EOF
